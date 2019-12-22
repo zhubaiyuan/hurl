@@ -174,3 +174,18 @@ fn parse(app: &App, s: &str) -> Result<Url, reqwest::UrlError> {
         }
     }
 }
+
+fn parse_auth(s: &str) -> HurlResult<(String, Option<String>)> {
+    if let Some(idx) = s.find(':') {
+        let (username, password_with_colon) = s.split_at(idx);
+        let password = password_with_colon.trim_start_matches(':');
+        if password.is_empty() {
+            return Ok((username.to_owned(), None));
+        } else {
+            return Ok((username.to_owned(), Some(password.to_owned())));
+        }
+    } else {
+        let password = rpassword::read_password_from_tty(Some("Password: "))?;
+        return Ok((s.to_owned(), Some(password)));
+    }
+}
