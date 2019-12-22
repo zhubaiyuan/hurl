@@ -202,3 +202,41 @@ enum Token<'a> {
     Text(&'a str),
     Escape(char),
 }
+
+fn gather_escapes<'a>(src: &'a str) -> Vec<Token<'a>> {
+    let mut tokens = Vec::new();
+    let mut start = 0;
+    let mut end = 0;
+    let mut chars = src.chars();
+    loop {
+        let a = chars.next();
+        if a.is_none() {
+            if start != end {
+                tokens.push(Token::Text(&src[start..end]));
+            }
+            return tokens;
+        }
+        let c = a.unwrap();
+        if c != '\\' {
+            end += 1;
+            continue;
+        }
+        let b = chars.next();
+        if b.is_none() {
+            tokens.push(Token::Text(&src[start..end + 1]));
+            return tokens;
+        }
+        let c = b.unwrap();
+        match c {
+            '\\' | '=' | '@' | ':' => {
+                if start != end {
+                    tokens.push(Token::Text(&src[start..end]));
+                }
+                tokens.push(Token::Escape(c));
+                end += 2;
+                start = end;
+            }
+            _ => end += 2,
+        }
+    }
+}
