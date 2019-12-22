@@ -196,3 +196,9 @@ pub enum Parameter {
     // :=@
     RawJsonDataFile { key: String, filename: String },
 }
+
+#[derive(Debug)]
+enum Token<'a> {
+    Text(&'a str),
+    Escape(char),
+}
