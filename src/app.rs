@@ -178,3 +178,21 @@ pub struct MethodData {
     #[structopt(parse(try_from_str = parse_param))]
     pub parameters: Vec<Parameter>,
 }
+
+#[derive(Debug)]
+pub enum Parameter {
+    // :
+    Header { key: String, value: String },
+    // =
+    Data { key: String, value: String },
+    // :=
+    RawJsonData { key: String, value: String },
+    // ==
+    Query { key: String, value: String },
+    // @
+    FormFile { key: String, filename: String },
+    // =@
+    DataFile { key: String, filename: String },
+    // :=@
+    RawJsonDataFile { key: String, filename: String },
+}
