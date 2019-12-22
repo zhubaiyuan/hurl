@@ -35,3 +35,49 @@ fn main() -> HurlResult<()> {
         }
     }
 }
+
+
+
+fn handle_response(
+    mut resp: reqwest::Response,
+) -> HurlResult<()> {
+    let status = resp.status();
+    let mut s = format!(
+        "{:?} {} {}\n",
+        resp.version(),
+        status.as_u16(),
+        status.canonical_reason().unwrap_or("Unknown")
+    );
+    let mut headers = Vec::new();
+    for (key, value) in resp.headers().iter() {
+        let nice_key = key.as_str().to_title_case().replace(' ', "-");
+        headers.push(format!(
+            "{}: {}",
+            nice_key,
+            value.to_str().unwrap_or("BAD HEADER VALUE")
+        ));
+    }
+    let result = resp.text()?;
+    let content_length = match resp.content_length() {
+        Some(len) => len,
+        None => result.len() as u64,
+    };
+    headers.push(format!("Content-Length: {}", content_length));
+    headers.sort();
+    s.push_str(&(&headers[..]).join("\n"));
+    println!("{}", s);
+    
+    let result_json: serde_json::Result<OrderedJson> = serde_json::from_str(&result);
+    match result_json {
+        Ok(result_value) => {
+            let result_str = serde_json::to_string_pretty(&result_value)?;
+            println!("{}", result_str);
+        }
+        Err(e) => {
+            trace!("Failed to parse result to JSON: {}", e);
+            println!("{}", result);
+        }
+    }
+
+    Ok(())
+}
