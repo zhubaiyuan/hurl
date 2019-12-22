@@ -112,3 +112,14 @@ impl App {
         }
     }
 }
+
+#[derive(StructOpt, Debug)]
+#[structopt(rename_all = "screaming_snake_case")]
+pub enum Method {
+    HEAD(MethodData),
+    GET(MethodData),
+    PUT(MethodData),
+    POST(MethodData),
+    PATCH(MethodData),
+    DELETE(MethodData),
+}
