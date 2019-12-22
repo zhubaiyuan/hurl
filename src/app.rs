@@ -198,6 +198,34 @@ pub enum Parameter {
 }
 
 #[derive(Debug)]
+enum Separator {
+    Colon,
+    Equal,
+    At,
+    ColonEqual,
+    EqualEqual,
+    EqualAt,
+    Snail,
+}
+
+impl TryFrom<&str> for Separator {
+    type Error = ();
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            ":" => Ok(Separator::Colon),
+            "=" => Ok(Separator::Equal),
+            "@" => Ok(Separator::At),
+            ":=" => Ok(Separator::ColonEqual),
+            "==" => Ok(Separator::EqualEqual),
+            "=@" => Ok(Separator::EqualAt),
+            ":=@" => Ok(Separator::Snail),
+            _ => Err(()),
+        }
+    }
+}
+
+#[derive(Debug)]
 enum Token<'a> {
     Text(&'a str),
     Escape(char),
