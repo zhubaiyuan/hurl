@@ -210,6 +210,23 @@ pub enum Parameter {
     RawJsonDataFile { key: String, filename: String },
 }
 
+impl Parameter {
+    pub fn is_form_file(&self) -> bool {
+        match *self {
+            Parameter::FormFile { .. } => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_data(&self) -> bool {
+        match *self {
+            Parameter::Header { .. } => false,
+            Parameter::Query { .. } => false,
+            _ => true,
+        }
+    }
+}
+
 #[derive(Debug)]
 enum Separator {
     Colon,
