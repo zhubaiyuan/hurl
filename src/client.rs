@@ -66,6 +66,80 @@ pub fn perform(
     }
 }
 
+fn handle_parameters(
+    mut builder: RequestBuilder,
+    is_form: bool,
+    is_multipart: bool,
+    parameters: &Vec<Parameter>,
+) -> HurlResult<RequestBuilder> {
+    let mut data: HashMap<&String, Value> = HashMap::new();
+    let mut multipart = if is_multipart {
+        Some(Form::new())
+    } else {
+        None
+    };
+
+    for param in parameters.iter() {
+        match param {
+            Parameter::Header { key, value } => {
+                trace!("Assing header: {}", key);
+                builder = builder.header(key, value);
+            }
+            Parameter::Data { key, value } => {
+                trace!("Adding data: {}", key);
+                if multipart.is_none() {
+                    data.insert(key, Value::String(value.to_owned()));
+                } else {
+                    multipart = multipart.map(|m| m.text(key.to_owned(), value.to_owned()));
+                }
+            }
+            Parameter::Query { key, value } => {
+                trace!("Adding query parameter: {}", key);
+                builder = builder.query(&[(key, value)]);
+            }
+            Parameter::RawJsonData { key, value } => {
+                trace!("Adding JSON data: {}", key);
+                let v: Value = serde_json::from_str(value)?;
+                data.insert(key, v);
+            }
+            Parameter::RawJsonDataFile { key, filename } => {
+                trace!("Adding JSON data for key={} from file={}", key, filename);
+                let file = File::open(filename)?;
+                let reader = BufReader::new(file);
+                let v: Value = serde_json::from_reader(reader)?;
+                data.insert(key, v);
+            }
+            Parameter::DataFile { key, filename } => {
+                trace!("Adding data from file={} for key={}", filename, key);
+                let value = std::fs::read_to_string(filename)?;
+                data.insert(key, Value::String(value));
+            }
+            Parameter::FormFile { key, filename } => {
+                trace!("Adding file={} with key={}", filename, key);
+                multipart = Some(
+                    multipart
+                        .unwrap()
+                        .file(key.to_owned(), filename.to_owned())?,
+                );
+            }
+        }
+    }
+
+    if let Some(m) = multipart {
+        builder = builder.multipart(m);
+    } else {
+        if !data.is_empty() {
+            if is_form {
+                builder = builder.form(&data);
+            } else {
+                builder = builder.json(&data);
+            }
+        }
+    }
+
+    Ok(builder)
+}
+
 fn parse(app: &App, s: &str) -> Result<Url, reqwest::UrlError> {
     if s.starts_with(":/") {
         return Url::parse(&format!("http://localhost{}", &s[1..]));
