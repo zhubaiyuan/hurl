@@ -65,3 +65,21 @@ pub fn perform(
         builder.send().map_err(From::from)
     }
 }
+
+fn parse(app: &App, s: &str) -> Result<Url, reqwest::UrlError> {
+    if s.starts_with(":/") {
+        return Url::parse(&format!("http://localhost{}", &s[1..]));
+    } else if s.starts_with(":") {
+        return Url::parse(&format!("http://localhost{}", s));
+    }
+    match Url::parse(s) {
+        Ok(url) => Ok(url),
+        Err(_e) => {
+            if app.secure {
+                Url::parse(&format!("https://{}", s))
+            } else {
+                Url::parse(&format!("http://{}", s))
+            }
+        }
+    }
+}
