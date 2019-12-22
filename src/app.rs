@@ -138,6 +138,19 @@ impl Method {
     }
 }
 
+impl From<&Method> for reqwest::Method {
+    fn from(m: &Method) -> reqwest::Method {
+        match m {
+            Method::HEAD(_) => reqwest::Method::HEAD,
+            Method::GET(_) => reqwest::Method::GET,
+            Method::PUT(_) => reqwest::Method::PUT,
+            Method::POST(_) => reqwest::Method::POST,
+            Method::PATCH(_) => reqwest::Method::PATCH,
+            Method::DELETE(_) => reqwest::Method::DELETE,
+        }
+    }
+}
+
 #[derive(StructOpt, Debug)]
 pub struct MethodData {
     /// The URL to request.
