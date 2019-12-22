@@ -1,0 +1,17 @@
+[package]
+name = "hurl"
+version = "0.1.0"
+authors = ["zhubaiyuan <21332201+zhubaiyuan@users.noreply.github.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+structopt = "0.3"
+heck = "0.3"
+log = "0.4"
+pretty_env_logger = "0.3"
+serde = "1.0"
+serde_json = "1.0"
+reqwest = "0.9.20"
+rpassword = "4.0"
