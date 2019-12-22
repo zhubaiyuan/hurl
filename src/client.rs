@@ -66,6 +66,23 @@ pub fn perform(
     }
 }
 
+fn handle_auth(
+    mut builder: RequestBuilder,
+    auth: &Option<String>,
+    token: &Option<String>,
+) -> HurlResult<RequestBuilder> {
+    if let Some(auth_string) = auth {
+        let (username, maybe_password) = parse_auth(&auth_string)?;
+        trace!("Parsed basic authentication. Username={}", username);
+        builder = builder.basic_auth(username, maybe_password);
+    }
+    if let Some(bearer) = token {
+        trace!("Parsed bearer authentication. Token={}", bearer);
+        builder = builder.bearer_auth(bearer);
+    }
+    Ok(builder)
+}
+
 fn handle_parameters(
     mut builder: RequestBuilder,
     is_form: bool,
