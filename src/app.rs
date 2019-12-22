@@ -89,3 +89,26 @@ pub struct App {
     #[structopt(parse(try_from_str = parse_param))]
     pub parameters: Vec<Parameter>,
 }
+
+impl App {
+    pub fn validate(&mut self) -> HurlResult<()> {
+        if self.cmd.is_none() && self.url.is_none() {
+            return Err(Error::MissingUrlAndCommand);
+        }
+        Ok(())
+    }
+
+    pub fn log_level(&self) -> Option<&'static str> {
+        if self.quiet || self.verbose <= 0 {
+            return None;
+        }
+
+        match self.verbose {
+            1 => Some("error"),
+            2 => Some("warn"),
+            3 => Some("info"),
+            4 => Some("debug"),
+            _ => Some("trace"),
+        }
+    }
+}
