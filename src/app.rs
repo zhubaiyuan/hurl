@@ -123,3 +123,44 @@ pub enum Method {
     PATCH(MethodData),
     DELETE(MethodData),
 }
+
+#[derive(StructOpt, Debug)]
+pub struct MethodData {
+    /// The URL to request.
+    pub url: String,
+
+    /// The headers, data, and query parameters to add to the request.
+    ///
+    /// There are seven types of parameters that can be added to a command-line. Each type of
+    /// parameter is distinguished by the unique separator between the key and value.
+    ///
+    /// Header -- key:value
+    ///
+    ///   e.g. X-API-TOKEN:abc123
+    ///
+    /// File upload -- key@filename
+    ///
+    ///   this simulates a file upload via multipart/form-data and requires --form
+    ///
+    /// Query parameter -- key==value
+    ///
+    ///   e.g. foo==bar becomes example.com?foo=bar
+    ///
+    /// Data field -- key=value
+    ///
+    ///   e.g. foo=bar becomes {"foo":"bar"} for JSON or form encoded
+    ///
+    /// Data field from file -- key=@filename
+    ///
+    ///   e.g. foo=@bar.txt becomes {"foo":"the contents of bar.txt"} or form encoded
+    ///
+    /// Raw JSON data where the value should be parsed to JSON first -- key:=value
+    ///
+    ///   e.g. foo:=[1,2,3] becomes {"foo":[1,2,3]}
+    ///
+    /// Raw JSON data from file -- key:=@filename
+    ///
+    ///   e.g. foo:=@bar.json becomes {"foo":{"bar":"this is from bar.json"}}
+    #[structopt(parse(try_from_str = parse_param))]
+    pub parameters: Vec<Parameter>,
+}
