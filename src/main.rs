@@ -39,7 +39,7 @@ fn main() -> HurlResult<()> {
     match app.cmd {
         Some(ref method) => {
             let resp = client::perform_method(&app, method, &mut session)?;
-            handle_response(&app, resp, &mut session)
+            handle_response(&app, &ss, theme, resp, &mut session)
         }
         None => {
             let url = app.url.take().unwrap();
@@ -50,13 +50,15 @@ fn main() -> HurlResult<()> {
                 reqwest::Method::GET
             };
             let resp = client::perform(&app, method, &mut session, &url, &app.parameters)?;
-            handle_response(&app, resp, &mut session)
+            handle_response(&app, &ss, theme, resp, &mut session)
         }
     }
 }
 
 fn handle_response(
     app: &app::App,
+    ss: &SyntaxSet,
+    theme: &Theme,
     mut resp: reqwest::Response,
     session: &mut Option<session::Session>,
 ) -> HurlResult<()> {
@@ -84,8 +86,9 @@ fn handle_response(
     headers.push(format!("Content-Length: {}", content_length));
     headers.sort();
     s.push_str(&(&headers[..]).join("\n"));
-    println!("{}", s);
-    
+    highlight_string(ss, theme, "HTTP", &s);
+
+    println!("");
     let result_json: serde_json::Result<OrderedJson> = serde_json::from_str(&result);
     match result_json {
         Ok(result_value) => {
