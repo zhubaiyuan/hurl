@@ -93,7 +93,7 @@ fn handle_response(
     match result_json {
         Ok(result_value) => {
             let result_str = serde_json::to_string_pretty(&result_value)?;
-            println!("{}", result_str);
+            highlight_string(ss, theme, "JSON", &result_str);
         }
         Err(e) => {
             trace!("Failed to parse result to JSON: {}", e);
@@ -108,4 +108,19 @@ fn handle_response(
         }
     }
     Ok(())
+}
+
+fn highlight_string(ss: &SyntaxSet, theme: &Theme, syntax: &str, string: &str) {
+    use syntect::easy::HighlightLines;
+    use syntect::util::{as_24_bit_terminal_escaped, LinesWithEndings};
+
+    let syn = ss
+        .find_syntax_by_name(syntax)
+        .expect(&format!("{} syntax should exist", syntax));
+    let mut h = HighlightLines::new(syn, theme);
+    for line in LinesWithEndings::from(string) {
+        let regions = h.highlight(line, &ss);
+        print!("{}", as_24_bit_terminal_escaped(&regions[..], false));
+    }
+    println!("\x1b[0m");
 }
