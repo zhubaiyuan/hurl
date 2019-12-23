@@ -28,3 +28,8 @@ impl Directories {
         &self.config
     }
 }
+
+lazy_static! {
+    pub static ref DIRECTORIES: Directories =
+        Directories::new().expect("Could not get home directory");
+}
