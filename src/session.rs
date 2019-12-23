@@ -124,3 +124,14 @@ impl Session {
         }
     }
 }
+
+pub fn make_safe_pathname(s: &str) -> String {
+    let mut buf = String::with_capacity(s.len());
+    for c in s.chars() {
+        match c {
+            'a'..='z' | 'A'..='Z' | '0'..='9' | '_' | '-' | ' ' => buf.push(c),
+            _ => buf.push('_'),
+        }
+    }
+    buf
+}
