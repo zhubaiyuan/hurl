@@ -9,6 +9,8 @@ mod directories;
 mod errors;
 mod session;
 
+use errors::HurlResult;
+
 type OrderedJson = std::collections::BTreeMap<String, serde_json::Value>;
 
 fn main() -> HurlResult<()> {
