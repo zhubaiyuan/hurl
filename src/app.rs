@@ -5,6 +5,7 @@ use structopt::StructOpt;
 
 use crate::config;
 use crate::errors::{Error, HurlResult};
+use crate::session::make_safe_pathname;
 
 /// A command line HTTP client
 #[derive(StructOpt, Debug)]
@@ -39,6 +40,19 @@ pub struct App {
     /// the authorization header.
     #[structopt(short, long)]
     pub token: Option<String>,
+
+    /// Session name.
+    #[structopt(long)]
+    pub session: Option<String>,
+
+    /// Session storage location.
+    #[structopt(long, parse(from_os_str))]
+    pub session_dir: Option<PathBuf>,
+
+    /// If true then use the stored session to augment the request,
+    /// but do not modify what is stored.
+    #[structopt(long)]
+    pub read_only: bool,
 
     /// Default transport.
     ///
