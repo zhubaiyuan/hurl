@@ -83,3 +83,10 @@ impl From<std::io::Error> for Error {
         Error::IO(err.kind())
     }
 }
+
+impl From<reqwest::UrlError> for Error {
+    #[inline]
+    fn from(err: reqwest::UrlError) -> Error {
+        Error::UrlParseError(err)
+    }
+}
