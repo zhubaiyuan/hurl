@@ -11,6 +11,11 @@ mod session;
 
 use errors::HurlResult;
 
+use syntect::highlighting::Theme;
+use syntect::parsing::SyntaxSet;
+
+mod syntax;
+
 type OrderedJson = std::collections::BTreeMap<String, serde_json::Value>;
 
 fn main() -> HurlResult<()> {
