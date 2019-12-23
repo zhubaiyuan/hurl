@@ -21,3 +21,10 @@ pub fn config_file(app: &App) -> PathBuf {
         .filter(|config_path| config_path.is_file())
         .unwrap_or_else(|| DIRECTORIES.config().join("config"))
 }
+
+pub fn read_config_file(path: PathBuf) -> Option<Config> {
+    fs::read_to_string(path).ok().map(|content| {
+        let config: Config = toml::from_str(&content).unwrap();
+        config
+    })
+}
