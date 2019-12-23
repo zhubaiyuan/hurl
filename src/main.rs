@@ -48,7 +48,9 @@ fn main() -> HurlResult<()> {
 
 
 fn handle_response(
+    app: &app::App,
     mut resp: reqwest::Response,
+    session: &mut Option<session::Session>,
 ) -> HurlResult<()> {
     let status = resp.status();
     let mut s = format!(
@@ -88,5 +90,11 @@ fn handle_response(
         }
     }
 
+    if !app.read_only {
+        if let Some(s) = session {
+            s.update_with_response(&resp);
+            s.save(app)?;
+        }
+    }
     Ok(())
 }
