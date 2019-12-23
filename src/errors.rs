@@ -53,3 +53,19 @@ impl std::error::Error for Error {
         }
     }
 }
+
+impl From<reqwest::Error> for Error {
+    #[inline]
+    fn from(err: reqwest::Error) -> Error {
+        if err.is_serialization() {
+            return Error::ClientSerialization;
+        }
+        if err.is_timeout() {
+            return Error::ClientTimeout;
+        }
+        if let Some(s) = err.status() {
+            return Error::ClientWithStatus(s);
+        }
+        Error::ClientOther
+    }
+}
