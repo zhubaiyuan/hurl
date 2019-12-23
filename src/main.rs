@@ -4,6 +4,8 @@ use log::trace;
 
 mod app;
 mod client;
+mod config;
+mod directories;
 mod errors;
 
 type OrderedJson = std::collections::BTreeMap<String, serde_json::Value>;
