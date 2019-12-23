@@ -84,6 +84,26 @@ fn handle_auth(
     Ok(builder)
 }
 
+fn handle_session(
+    mut builder: RequestBuilder,
+    session: &mut Option<Session>,
+    parameters: &Vec<Parameter>,
+    update_session: bool,
+    auth: &Option<String>,
+    token: &Option<String>,
+) -> RequestBuilder {
+    if let Some(s) = session {
+        trace!("Adding session data to request");
+        builder = s.add_to_request(builder);
+        if update_session {
+            trace!("Updating session with parameters from this request");
+            s.update_with_parameters(parameters);
+            s.update_auth(auth, token);
+        }
+    }
+    builder
+}
+
 fn handle_parameters(
     mut builder: RequestBuilder,
     is_form: bool,
