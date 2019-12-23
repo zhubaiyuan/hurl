@@ -28,6 +28,9 @@ fn main() -> HurlResult<()> {
         pretty_env_logger::init();
     }
 
+    let (ss, ts) = syntax::build()?;
+    let theme = &ts.themes["Solarized (dark)"];
+
     let mut session = app
         .session
         .as_ref()
