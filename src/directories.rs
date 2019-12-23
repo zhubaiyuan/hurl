@@ -3,3 +3,7 @@ use std::path::{Path, PathBuf};
 
 #[cfg(target_os = "macos")]
 use std::env;
+
+pub struct Directories {
+    config: PathBuf,
+}
