@@ -3,6 +3,7 @@ use std::convert::TryFrom;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
+use crate::config;
 use crate::errors::{Error, HurlResult};
 
 /// A command line HTTP client
