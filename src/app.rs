@@ -48,6 +48,24 @@ pub struct App {
     #[structopt(short, long)]
     pub secure: bool,
 
+    /// Configuration file.
+    ///
+    /// A TOML file which is stored by default at HOME/.config/hurl/config
+    /// where HOME is platform dependent.
+    ///
+    /// The file supports the following optional keys with the given types:
+    /// verbose: u8
+    /// form: bool
+    /// auth: string
+    /// token: string
+    /// secure: bool
+    ///
+    /// Each option has the same meaning as the corresponding configuration
+    /// option with the same name. The verbose setting is a number from 0
+    /// meaning no logging to 5 meaning maximal log output.
+    #[structopt(short, long, env = "HURL_CONFIG", parse(from_os_str))]
+    pub config: Option<PathBuf>,
+
     /// The HTTP Method to use, one of: HEAD, GET, POST, PUT, PATCH, DELETE.
     #[structopt(subcommand)]
     pub cmd: Option<Method>,
@@ -98,6 +116,34 @@ impl App {
             return Err(Error::MissingUrlAndCommand);
         }
         Ok(())
+    }
+
+    pub fn process_config_file(&mut self) {
+        let config_path = config::config_file(self);
+        let config_opt = config::read_config_file(config_path);
+        if let Some(mut config) = config_opt {
+            if self.verbose == 0 {
+                if let Some(v) = config.verbose {
+                    self.verbose = v;
+                }
+            }
+            if !self.form {
+                if let Some(f) = config.form {
+                    self.form = f;
+                }
+            }
+            if !self.secure {
+                if let Some(s) = config.secure {
+                    self.secure = s;
+                }
+            }
+            if self.auth.is_none() {
+                self.auth = config.auth.take();
+            }
+            if self.token.is_none() {
+                self.token = config.token.take();
+            }
+        }
     }
 
     pub fn log_level(&self) -> Option<&'static str> {
