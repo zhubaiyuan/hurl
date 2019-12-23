@@ -13,3 +13,11 @@ pub struct Config {
     pub token: Option<String>,
     pub secure: Option<bool>,
 }
+
+pub fn config_file(app: &App) -> PathBuf {
+    app.config
+        .as_ref()
+        .cloned()
+        .filter(|config_path| config_path.is_file())
+        .unwrap_or_else(|| DIRECTORIES.config().join("config"))
+}
