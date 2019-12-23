@@ -29,7 +29,7 @@ fn main() -> HurlResult<()> {
     match app.cmd {
         Some(ref method) => {
             let resp = client::perform_method(&app, method, &mut session)?;
-            handle_response(&app, &ss, theme, resp, &mut session)
+            handle_response(&app, resp, &mut session)
         }
         None => {
             let url = app.url.take().unwrap();
@@ -40,12 +40,10 @@ fn main() -> HurlResult<()> {
                 reqwest::Method::GET
             };
             let resp = client::perform(&app, method, &mut session, &url, &app.parameters)?;
-            handle_response(&app, &ss, theme, resp, &mut session)
+            handle_response(&app, resp, &mut session)
         }
     }
 }
-
-
 
 fn handle_response(
     app: &app::App,
