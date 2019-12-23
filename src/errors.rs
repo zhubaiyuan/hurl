@@ -76,3 +76,10 @@ impl From<serde_json::error::Error> for Error {
         Error::SerdeJson(err.classify())
     }
 }
+
+impl From<std::io::Error> for Error {
+    #[inline]
+    fn from(err: std::io::Error) -> Error {
+        Error::IO(err.kind())
+    }
+}
