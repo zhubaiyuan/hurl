@@ -173,6 +173,16 @@ impl App {
             _ => Some("trace"),
         }
     }
+
+    pub fn host(&self) -> String {
+        if let Some(url) = &self.url {
+            make_safe_pathname(url)
+        } else if let Some(cmd) = &self.cmd {
+            make_safe_pathname(&cmd.data().url)
+        } else {
+            unreachable!();
+        }
+    }
 }
 
 #[derive(StructOpt, Debug)]
