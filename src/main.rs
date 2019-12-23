@@ -7,6 +7,7 @@ mod client;
 mod config;
 mod directories;
 mod errors;
+mod session;
 
 type OrderedJson = std::collections::BTreeMap<String, serde_json::Value>;
 
@@ -19,6 +20,11 @@ fn main() -> HurlResult<()> {
         std::env::set_var("RUST_LOG", format!("hurl={}", level));
         pretty_env_logger::init();
     }
+
+    let mut session = app
+        .session
+        .as_ref()
+        .map(|name| session::Session::get_or_create(&app, name.clone(), app.host()));
 
     match app.cmd {
         Some(ref method) => {
