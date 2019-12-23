@@ -69,3 +69,10 @@ impl From<reqwest::Error> for Error {
         Error::ClientOther
     }
 }
+
+impl From<serde_json::error::Error> for Error {
+    #[inline]
+    fn from(err: serde_json::error::Error) -> Error {
+        Error::SerdeJson(err.classify())
+    }
+}
