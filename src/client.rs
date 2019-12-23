@@ -1,5 +1,7 @@
 use crate::app::{App, Method, Parameter};
+use std::time::Instant;
 use crate::errors::{Error, HurlResult};
+use crate::session::Session;
 use log::{info, debug, trace, log_enabled, self};
 use reqwest::multipart::Form;
 use reqwest::{Client, RequestBuilder, Response, Url};
@@ -7,7 +9,6 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
-use std::time::Instant;
 
 pub fn perform_method(
     app: &App,
