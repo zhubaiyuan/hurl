@@ -44,3 +44,12 @@ impl fmt::Debug for Error {
         write!(f, "{}", self)
     }
 }
+
+impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Error::UrlParseError(e) => Some(e),
+            _ => None,
+        }
+    }
+}
