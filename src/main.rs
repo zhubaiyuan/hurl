@@ -13,6 +13,7 @@ type OrderedJson = std::collections::BTreeMap<String, serde_json::Value>;
 fn main() -> HurlResult<()> {
     let mut app = app::App::from_args();
     app.validate()?;
+    app.process_config_file();
 
     if let Some(level) = app.log_level() {
         std::env::set_var("RUST_LOG", format!("hurl={}", level));
